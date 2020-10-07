@@ -21,7 +21,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
 {
 
     private int numElements;
-    private BinaryTreeNode rootNode;
+    protected BinaryTreeNode rootNode;
     private Comparator<? super E> comparator;//null for natural ordering
     private E fromElement, toElement; // bounds for visible view of tree
 
@@ -537,12 +537,13 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     public class BinaryTreeNode
     {
 
-        public BinaryTreeNode leftChild, rightChild;
+        public BinaryTreeNode parent, leftChild, rightChild;
         public E element;
 
         public BinaryTreeNode(E element)
         {
             this.element = element;
+            parent = null;
             leftChild = null;
             rightChild = null;
         }
