@@ -1,17 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package assignment3;
 
 import java.awt.Color;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.SortedSet;
 
 /**
  *
  * @author Jeremiah
  */
-public class BalancedPDS extends BinarySearchTree {
+public class BalancedPDS<E> extends BinarySearchTree {
     protected static final Color RED = Color.red;
     protected static final Color BLACK = Color.black;
     
@@ -25,7 +23,7 @@ public class BalancedPDS extends BinarySearchTree {
     {
         protected Color color;
 
-        public RBNode(Object element) {
+        public RBNode(E element) {
             super(element);
             this.color = RED;
         }
@@ -46,7 +44,22 @@ public class BalancedPDS extends BinarySearchTree {
     public BalancedPDS()
     {
         setNil(new RBNode(null));
-        RBNode root = nil;
+        rootNode = nil;
+    }
+    
+    public BalancedPDS(Collection<? extends E> c)
+    {
+        super(c);
+    }
+
+    public BalancedPDS(Comparator<? super E> comparator)
+    {
+        super(comparator);
+    }
+
+    public BalancedPDS(SortedSet<E> s)
+    {
+        super(s);
     }
     
     protected void leftRotate(RBNode x)
@@ -59,12 +72,8 @@ public class BalancedPDS extends BinarySearchTree {
         if (y.leftChild != nil)
             y.leftChild.parent = x;
 
-        // Make y the root of the subtree for which x was the root.
         y.parent = x.parent;
-
-        // If x is the root of the entire tree, make y the root.
-        // Otherwise, make y the correct child of the subtree's
-        // parent.
+        
         if (x.parent == nil)
             rootNode = y;
         else 
@@ -98,5 +107,83 @@ public class BalancedPDS extends BinarySearchTree {
             y.parent.leftChild = y;
             else
             y.parent.rightChild = y;
+    }
+    
+    public void insert(E element)
+    {
+        RBNode newNode = new RBNode(element);
+        
+        super.add(newNode);
+        insertFixup(newNode);
+    }
+    
+    protected void insertFixup(RBNode newNode)
+    {
+        RBNode rotateNode = null;
+        
+        while (((RBNode) newNode.parent).color == RED) {
+            if (newNode.parent == newNode.parent.parent.leftChild) {
+                rotateNode = (RBNode) newNode.parent.parent.rightChild;
+            
+            if (rotateNode.color == RED) {
+                ((RBNode) newNode.parent).color = BLACK;
+                rotateNode.color = BLACK;
+                ((RBNode) newNode.parent.parent).color = RED;
+                newNode = (RBNode) newNode.parent.parent;
+            }
+            
+            else {
+                if (newNode == newNode.parent.rightChild) {
+                    newNode = (RBNode) newNode.parent;
+                    leftRotate(newNode);
+                }
+                
+                ((RBNode) newNode.parent).color = BLACK;
+                ((RBNode) newNode.parent.parent).color = RED;
+                rightRotate((RBNode) newNode.parent.parent);
+            }
+            }
+            
+            else {
+                rotateNode = (RBNode) newNode.parent.parent.leftChild;
+                
+                if (rotateNode.color == RED) {
+                    ((RBNode) newNode.parent).color = BLACK;
+                    rotateNode.color = BLACK;
+                    ((RBNode) newNode.parent.parent).color = RED;
+                    newNode = (RBNode) newNode.parent.parent;
+                }
+                
+                else {
+                    if (newNode == newNode.parent.leftChild) {
+                        newNode = (RBNode) newNode.parent;
+                        rightRotate(newNode);
+                    }
+                    
+                    ((RBNode) newNode.parent).color = BLACK;
+                    ((RBNode) newNode.parent.parent).color = RED;
+                    leftRotate((RBNode) newNode.parent.parent);
+                }
+            }
+        }
+        
+        ((RBNode) rootNode).color = BLACK;
+    }
+    
+    public int blackHeight(RBNode node)
+    {
+        if (node == null)
+            return 0;
+        
+        int left = blackHeight((RBNode) node.leftChild);
+        int right = blackHeight((RBNode) node.rightChild);
+        
+        if (left == right)
+            if (node.color == BLACK)
+                return left + 1;
+            else
+                return left;
+        else
+            throw new BlackHeightException();
     }
 }
