@@ -9,10 +9,12 @@ package assignment3;
  * @author Andrew Ensor
  */
 import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 
@@ -109,46 +111,37 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     }
     
     //Hook method
-    protected void addToVersion(BinaryTreeNode currentNode, BinaryTreeNode left, BinaryTreeNode right)
+    protected void notePath(List<Boolean> path, boolean direction)
     {
     }
     
     //Hook method
-    protected void newVersion(BinaryTreeNode root)
+    protected void newAdd(List<Boolean> path, E o)
     { 
     }
     
     // adds the element to the sorted set provided it is not already in
-    // the set, and returns true if the sorted set did not already
-    // contain the element
-    public boolean add(E o)
+   // the set, and returns true if the sorted set did not already
+   // contain the element
+   public boolean add(E o)
     {
         if (!withinView(o))
         {
             throw new IllegalArgumentException("Outside view");
         }
-        
         BinaryTreeNode newNode = new BinaryTreeNode(o);
-        BinaryTreeNode newRoot = new BinaryTreeNode(o);
+        List<Boolean> path = new ArrayList();
         
         boolean added = false;
         if (rootNode == null)
         {
             rootNode = newNode;
             added = true;
-            
-            newRoot = rootNode;
         } else
         {  // find where to add newNode
             BinaryTreeNode currentNode = rootNode;
-            
-            //make a copy of root node
-            E element = rootNode.element;
-            newRoot = new BinaryTreeNode(element);
-            
-            BinaryTreeNode currentNew = newRoot;
-            
             boolean done = false;
+            
             while (!done)
             {
                 int comparison = compare(o, currentNode.element);
@@ -159,25 +152,13 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                         currentNode.leftChild = newNode;
                         done = true;
                         added = true;
-                        
-                        //make a copy of new node
-                        E newElement = newNode.element;
-                        BinaryTreeNode newLeft = new BinaryTreeNode(newElement);
-                        
-                        //Hook method
-                        addToVersion(currentNew, newLeft, currentNode.rightChild);
                     } else
                     {
-                        //make a copy of left child
-                        E leftElement = currentNode.leftChild.element;
-                        BinaryTreeNode newLeft = new BinaryTreeNode(leftElement);
-                    
-                        //Hook method
-                        addToVersion(currentNew, newLeft, currentNode.rightChild);
-                        
-                        currentNew = newLeft;
                         currentNode = currentNode.leftChild;
                     }
+                    
+                    notePath(path, false);
+                    
                 } else if (comparison > 0)//newNode is greater than currentNode
                 {
                     if (currentNode.rightChild == null)
@@ -185,25 +166,12 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                         currentNode.rightChild = newNode;
                         done = true;
                         added = true;
-                        
-                        //make a copy of new node
-                        E newElement = newNode.element;
-                        BinaryTreeNode newRight = new BinaryTreeNode(newElement);
-                        
-                        //Hook method
-                        addToVersion(currentNew, currentNode.leftChild, newRight);
                     } else
                     {
-                        //make a copy of right child
-                        E rightElement = currentNode.rightChild.element;
-                        BinaryTreeNode newRight = new BinaryTreeNode(rightElement);
-                    
-                        //Hook method
-                        addToVersion(currentNew, currentNode.leftChild, newRight);
-                        
-                        currentNew = newRight;
                         currentNode = currentNode.rightChild;
                     }
+                    
+                    notePath(path, true);
                     
                 } else if (comparison == 0) // newNode equal to currentNode
                 {
@@ -214,15 +182,14 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         if (added)
         {
             numElements++;
-            newVersion(newRoot);
+            newAdd(path, o);
         }
-        
         return added;
     }
 
     // performs a comparison of the two elements, using the comparator
     // if not null, otherwise using the compareTo method
-    private int compare(E element1, E element2)
+    protected int compare(E element1, E element2)
     {
         if (comparator != null)
         {
@@ -238,17 +205,24 @@ public class BinarySearchTree<E> extends AbstractSet<E>
             return 0;
         }
     }
-
+    
+    protected void newRemove(List<Boolean> path, Object o)
+    {
+    }
+    
     // remove the element from the sorted set and returns true if the
     // element was in the sorted set
     public boolean remove(Object o)
     {
-        boolean removed = false;
         E element = (E) o; // unchecked, could throw exception
         if (!withinView(element))
         {
             throw new IllegalArgumentException("Outside view");
         }
+        
+        List<Boolean> path = new ArrayList();
+        
+        boolean removed = false;
         if (rootNode != null)
         {  // check if root to be removed
             if (compare(element, rootNode.element) == 0)
@@ -262,10 +236,13 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                 if (compare(element, rootNode.element) < 0)
                 {
                     removalNode = rootNode.leftChild;
+                    notePath(path, false);
                 } else // compare(element, rootNode.element)>0
                 {
                     removalNode = rootNode.rightChild;
+                    notePath(path, true);
                 }
+                
                 while (removalNode != null && !removed)
                 {  // determine whether the removalNode has been found
                     int comparison = compare(element, removalNode.element);
@@ -287,9 +264,11 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                         if (comparison < 0)
                         {
                             removalNode = removalNode.leftChild;
+                            notePath(path, false);
                         } else // comparison>0
                         {
                             removalNode = removalNode.rightChild;
+                            notePath(path, true);
                         }
                     }
                 }
@@ -298,6 +277,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         if (removed)
         {
             numElements--;
+            newRemove(path, o);
         }
         return removed;
     }

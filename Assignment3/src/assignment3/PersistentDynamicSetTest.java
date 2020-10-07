@@ -9,17 +9,19 @@ import javax.swing.JFrame;
  * @author Carlo Carbonilla
  */
 
-public class BinarySearchTreeTest
+public class PersistentDynamicSetTest
 {
-    public static void main(String[] args)
+        public static void main(String[] args)
     {
         JFrame frame = new JFrame("Expression Tree GUI builder");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // create the binary search tree
-        BinarySearchTree<String> tree = new BinarySearchTree();
+        PersistentDynamicSet<String> tree = new PersistentDynamicSet();
         
-        BinarySearchTreeGUI<String> gui = new BinarySearchTreeGUI(tree);
+        // build the tree
+
+        PersistentDynamicSetGUI<String> gui = new PersistentDynamicSetGUI(tree);
         
         frame.getContentPane().add(gui);
         Toolkit toolkit = Toolkit.getDefaultToolkit();

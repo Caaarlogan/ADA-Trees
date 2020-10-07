@@ -11,59 +11,85 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * Almost Complete GUI - just need to finish the code when pressing the buttons
  * and updating the number of nodes in the tree.. WIll only build once
- * BinarySearchTree.BinaryTreeNode subclasses are made
+ * BinaryTreeNode subclasses are made
  *
  * @author sehall
  */
-public class BinarySearchTreeGUI<E> extends JPanel implements ActionListener
+public class PersistentDynamicSetGUI<E> extends JPanel implements ActionListener
 {
     private final JButton addButton, removeButton;
     private DrawPanel drawPanel;
-    private BinarySearchTree tree;
+    private PersistentDynamicSet tree;
     private BinaryTreeNode root;
+    private JList versionList; //list of versions
+    private DefaultListModel<Integer> model;
+    private int versionCount;
     private JTextField postFixField;
     public static int PANEL_H = 500;
     public static int PANEL_W = 700;
     private final int BOX_SIZE = 40;
 
-    public BinarySearchTreeGUI(BinarySearchTree tree)
+    public PersistentDynamicSetGUI(PersistentDynamicSet tree)
     {
         super(new BorderLayout());
-        try
-        {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e)
-        {
-        }
+        
+        versionCount = 0;
         this.tree = tree;
         root = tree.getRoot();
+        
         super.setPreferredSize(new Dimension(PANEL_W, PANEL_H + 30));
+        
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setPreferredSize(new Dimension(PANEL_W, 30));
+        buttonPanel.setPreferredSize(new Dimension(PANEL_W, 40));
+        
         drawPanel = new DrawPanel();
-
+        
         addButton = new JButton("Add");
-        removeButton = new JButton("Remove");
-
         addButton.addActionListener((ActionListener) this);
+        removeButton = new JButton("Remove");
         removeButton.addActionListener((ActionListener) this);
-
         postFixField = new JTextField(40);
-
+        
+        model = new DefaultListModel<>();
+        
+        JPanel listPanel = new JPanel();
+        listPanel.setPreferredSize(new Dimension(150, PANEL_H));
+        
+        versionList = new JList();
+        versionList.setModel(model);
+        versionList.addListSelectionListener(new ListSelectionListener()
+        {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                int version = (int) versionList.getSelectedValue();
+                root = (BinaryTreeNode) tree.getVersions().get(version);
+                root = (BinaryTreeNode) tree.getVersions().get(version);
+                drawPanel.repaint();
+            }
+        });
+        
         buttonPanel.add(postFixField);
         buttonPanel.add(addButton);
         buttonPanel.add(removeButton);
+        listPanel.add(versionList);
 
         super.add(drawPanel, BorderLayout.CENTER);
         super.add(buttonPanel, BorderLayout.SOUTH);
+        super.add(listPanel, BorderLayout.WEST);
     }
 
     @Override
@@ -75,13 +101,23 @@ public class BinarySearchTreeGUI<E> extends JPanel implements ActionListener
         {   //finish this button event to handle the evaluation and output to infix of the tree 
             String newString = postFixField.getText();
             tree.add(newString);
-            root = tree.getRoot();
+            
+            model.addElement(versionCount);
+            versionList.setSelectedIndex(versionCount);
+            versionCount++;
+            
             postFixField.setText("");
+            
         } else if (source == removeButton && !postFixField.getText().equals(""))
         {
             String newString = postFixField.getText();
             tree.remove(newString);
             root = tree.getRoot();
+            
+            model.addElement(versionCount);
+            versionList.setSelectedIndex(versionCount);
+            versionCount++;
+            
             postFixField.setText("");
         }
 
@@ -156,6 +192,7 @@ public class BinarySearchTreeGUI<E> extends JPanel implements ActionListener
             g.drawString(current.toString(), currentPoint.x - current.toString().length() * 4, currentPoint.y);
 
             return nodeCount;
+
         }
     }
 }
