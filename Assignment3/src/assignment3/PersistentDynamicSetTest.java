@@ -19,8 +19,6 @@ public class PersistentDynamicSetTest
         // create the binary search tree
         PersistentDynamicSet<String> tree = new PersistentDynamicSet();
         
-        // build the tree
-
         PersistentDynamicSetGUI<String> gui = new PersistentDynamicSetGUI(tree);
         
         frame.getContentPane().add(gui);

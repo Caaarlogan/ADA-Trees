@@ -11,6 +11,7 @@ import java.util.SortedSet;
  */
 public class PersistentDynamicSet<E> extends BinarySearchTree<E>
 {
+
     private List<BinaryTreeNode> versions;
 
     public PersistentDynamicSet()
@@ -54,7 +55,8 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
         {
             BinaryTreeNode root = new BinaryTreeNode(o);
             versions.add(root);
-        } else
+        }
+        else
         {
             //Get root of last version
             BinaryTreeNode currentLast = versions.get(versions.size() - 1);
@@ -65,44 +67,37 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
 
             //Traverse through path, add new element when child node is null
             for (boolean direction : path)
-            {
                 if (!direction)
                 {
                     currentNew.rightChild = currentLast.rightChild;
 
                     if (currentLast.leftChild != null)
-                    {
                         currentNew.leftChild = new BinaryTreeNode(currentLast.leftChild.element);
-                    } else
-                    {
+                    else
                         currentNew.leftChild = new BinaryTreeNode(o);
-                    }
 
                     currentLast = currentLast.leftChild;
                     currentNew = currentNew.leftChild;
-                } else
+                }
+                else
                 {
                     currentNew.leftChild = currentLast.leftChild;
 
                     if (currentLast.rightChild != null)
-                    {
                         currentNew.rightChild = new BinaryTreeNode(currentLast.rightChild.element);
-                    } else
-                    {
+                    else
                         currentNew.rightChild = new BinaryTreeNode(o);
-                    }
 
                     currentLast = currentLast.rightChild;
                     currentNew = currentNew.rightChild;
                 }
-            }
 
             versions.add(newRoot);
         }
     }
 
     @Override
-    protected void newRemove(List<Boolean> path, Object o)
+    protected void newRemove(List<Boolean> path, List<Boolean> replacePath, Object o)
     {
         E element = (E) o;
         BinaryTreeNode lastRoot = versions.get(versions.size() - 1); //Get root of last version
@@ -125,7 +120,8 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
                 newRemove = newParent.leftChild;
                 lastRemove = lastParent.leftChild;
 
-            } else
+            }
+            else
             {
                 newParent.leftChild = lastParent.leftChild;
                 newParent.rightChild = new BinaryTreeNode(lastParent.rightChild.element);
@@ -136,7 +132,6 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
 
             //Traverse to remove node
             if (path.size() > 1)
-            {
                 for (int i = 1; i < path.size(); i++)
                 {
                     boolean direction = path.get(i);
@@ -152,7 +147,8 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
                         newRemove = newParent.leftChild;
                         lastRemove = lastParent.leftChild;
 
-                    } else
+                    }
+                    else
                     {
                         newParent.leftChild = lastParent.leftChild;
                         newParent.rightChild = new BinaryTreeNode(lastParent.rightChild.element);
@@ -161,34 +157,92 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
                         lastRemove = lastParent.rightChild;
                     }
                 }
-            }
         }
 
-        //if false, remove node is parent node left child
-        //if true, remove node is parent node right child
-        boolean whichChild = path.get(path.size() - 1);
+        //if false, remove node is left child of parent node
+        //if true, remove node is right child of parent node
+        boolean whichChild = false;
+        boolean removeRoot = false; //are we removing root?
 
+        if (path.isEmpty())
+            removeRoot = true;
+        else //if not removing root
+            whichChild = path.get(path.size() - 1);
+
+        //if remove node has no children
         if (lastRemove.leftChild == null && lastRemove.rightChild == null)
-        {
-            if (!whichChild)
+            if (removeRoot)
+                newRoot = null;
+            else if (!whichChild)
                 newParent.leftChild = null;
             else
                 newParent.rightChild = null;
-        } else if (lastRemove.leftChild == null && lastRemove.rightChild != null)
-        {
-            if (!whichChild)
+        //if remove node has one children
+        else if (lastRemove.leftChild == null && lastRemove.rightChild != null)
+            if (removeRoot)
+                newRoot = lastRoot.rightChild;
+            else if (!whichChild)
                 newParent.leftChild = lastRemove.rightChild;
             else
                 newParent.rightChild = lastRemove.rightChild;
-        } else if (lastRemove.leftChild != null && lastRemove.rightChild == null)
-        {
-            if (!whichChild)
+        else if (lastRemove.leftChild != null && lastRemove.rightChild == null)
+            if (removeRoot)
+                newRoot = lastRoot.leftChild;
+            else if (!whichChild)
                 newParent.leftChild = lastRemove.leftChild;
             else
                 newParent.rightChild = lastRemove.leftChild;
-        } else
+        //if remove node has two children
+        else
         {
+            BinaryTreeNode lastReplaceParent = lastRemove;
+            BinaryTreeNode lastReplaceRemove = lastReplaceParent.rightChild;
 
+            BinaryTreeNode newReplaceParent = newRemove;
+            BinaryTreeNode newReplaceRemove = new BinaryTreeNode(lastReplaceParent.rightChild.element);
+
+            newReplaceParent.leftChild = lastReplaceParent.leftChild;
+            newReplaceParent.rightChild = newReplaceRemove;
+            newReplaceRemove.rightChild = lastReplaceRemove.rightChild;
+
+            //if right child of remove node has no left child
+            if (replacePath.isEmpty())
+            {
+                newReplaceRemove.leftChild = lastReplaceParent.leftChild;
+
+                if (removeRoot)
+                    newRoot = newReplaceRemove;
+                else if (!whichChild)
+                    newParent.leftChild = newReplaceRemove;
+                else
+                    newParent.rightChild = newReplaceRemove;
+            }
+            //iterate to successor node
+            else
+            {
+                for (boolean left : replacePath)
+                {
+                    lastReplaceParent = lastReplaceRemove;
+                    newReplaceParent = newReplaceRemove;
+
+                    newReplaceParent.rightChild = lastReplaceParent.rightChild;
+                    newReplaceParent.leftChild = new BinaryTreeNode(lastReplaceParent.leftChild.element);
+
+                    newReplaceRemove = newReplaceParent.leftChild;
+                    lastReplaceRemove = lastReplaceParent.leftChild;
+                }
+
+                newReplaceParent.leftChild = lastReplaceRemove.rightChild;
+                newReplaceRemove.leftChild = newRemove.leftChild;
+                newReplaceRemove.rightChild = newRemove.rightChild;
+
+                if (removeRoot)
+                    newRoot = newReplaceRemove;
+                else if (!whichChild)
+                    newParent.leftChild = newReplaceRemove;
+                else
+                    newParent.rightChild = newReplaceRemove;
+            }
         }
 
         versions.add(newRoot);

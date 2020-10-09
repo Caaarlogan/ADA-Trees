@@ -220,7 +220,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         }
     }
     
-    protected void newRemove(List<Boolean> path, Object o)
+protected void newRemove(List<Boolean> path, List<Boolean> replacePath, Object o)
     {
     }
     
@@ -235,13 +235,17 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         }
         
         List<Boolean> path = new ArrayList();
+        List<Boolean> replacePath = new ArrayList();
+        
         
         boolean removed = false;
+        
         if (rootNode != null)
         {  // check if root to be removed
             if (compare(element, rootNode.element) == 0)
             {
-                rootNode = makeReplacement(rootNode);
+                rootNode = makeReplacement(rootNode, replacePath);
+                removed = true;
             } else
             {  // search for the element o
                 BinaryTreeNode parentNode = rootNode;
@@ -265,11 +269,11 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                         if (removalNode == parentNode.leftChild)
                         {
                             parentNode.leftChild
-                                    = makeReplacement(removalNode);
+                                    = makeReplacement(removalNode, replacePath);
                         } else // removalNode==parentNode.rightChild
                         {
                             parentNode.rightChild
-                                    = makeReplacement(removalNode);
+                                    = makeReplacement(removalNode, replacePath);
                         }
                         removed = true;
                     } else // determine whether to traverse to left or right
@@ -291,14 +295,14 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         if (removed)
         {
             numElements--;
-            newRemove(path, o);
+            newRemove(path, replacePath, o);
         }
         return removed;
     }
 
     // helper method which removes removalNode (presumed not null) and
     // returns a reference to node that should take place of removalNode
-    private BinaryTreeNode makeReplacement(BinaryTreeNode removalNode)
+    private BinaryTreeNode makeReplacement(BinaryTreeNode removalNode, List<Boolean> replacePath)
     {
         BinaryTreeNode replacementNode = null;
         // check cases when removalNode has only one child
@@ -315,6 +319,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {  // find the inorder successor and use it as replacementNode
             BinaryTreeNode parentNode = removalNode;
             replacementNode = removalNode.rightChild;
+            
             if (replacementNode.leftChild == null)
             // replacementNode can be pushed up one level to replace
             // removalNode, move the left child of removalNode to be
@@ -327,6 +332,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                 {
                     parentNode = replacementNode;
                     replacementNode = replacementNode.leftChild;
+                    notePath(replacePath, false);
                 } while (replacementNode.leftChild != null);
                 // move the right child of replacementNode to be the left
                 // child of the parent of replacementNode

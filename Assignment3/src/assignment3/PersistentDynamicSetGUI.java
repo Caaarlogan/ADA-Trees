@@ -15,10 +15,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -67,7 +64,7 @@ public class PersistentDynamicSetGUI<E> extends JPanel implements ActionListener
         model = new DefaultListModel<>();
         
         JPanel listPanel = new JPanel();
-        listPanel.setPreferredSize(new Dimension(150, PANEL_H));
+        listPanel.setPreferredSize(new Dimension(50, PANEL_H));
         
         versionList = new JList();
         versionList.setModel(model);
@@ -99,27 +96,32 @@ public class PersistentDynamicSetGUI<E> extends JPanel implements ActionListener
         if (source == addButton && !postFixField.getText().equals(""))
         {   //finish this button event to handle the evaluation and output to infix of the tree 
             String newString = postFixField.getText();
-            tree.add(newString);
             
-            model.addElement(versionCount);
-            versionList.setSelectedIndex(versionCount);
-            versionCount++;
+            boolean added = tree.add(newString);
+            
+            if(added)
+            {
+                root = tree.getRoot();
+                model.addElement(versionCount);
+                versionList.setSelectedIndex(versionCount);
+                versionCount++;
+            }
             
             postFixField.setText("");
             
         } else if (source == removeButton && !postFixField.getText().equals(""))
         {
             String newString = postFixField.getText();
-            tree.remove(newString);
-            root = tree.getRoot();
             
+            boolean removed = tree.remove(newString);
+            
+            root = tree.getRoot();
             model.addElement(versionCount);
             versionList.setSelectedIndex(versionCount);
             versionCount++;
-            
+
             postFixField.setText("");
         }
-
         drawPanel.repaint();
     }
 

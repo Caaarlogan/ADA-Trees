@@ -19,7 +19,7 @@ import javax.swing.UIManager;
 /**
  * Almost Complete GUI - just need to finish the code when pressing the buttons
  * and updating the number of nodes in the tree.. WIll only build once
- * BinarySearchTree.BinaryTreeNode subclasses are made
+ * BinaryTreeNode subclasses are made
  *
  * @author sehall
  */
@@ -74,14 +74,21 @@ public class BinarySearchTreeGUI<E> extends JPanel implements ActionListener
         if (source == addButton && !postFixField.getText().equals(""))
         {   //finish this button event to handle the evaluation and output to infix of the tree 
             String newString = postFixField.getText();
-            tree.add(newString);
-            root = tree.getRoot();
+            boolean added = tree.add(newString);
+            
+            if (added)
+                root = tree.getRoot();
+            
             postFixField.setText("");
+            
         } else if (source == removeButton && !postFixField.getText().equals(""))
         {
             String newString = postFixField.getText();
-            tree.remove(newString);
-            root = tree.getRoot();
+            boolean removed = tree.remove(newString);
+            
+            if (removed)
+                root = tree.getRoot();
+            
             postFixField.setText("");
         }
 
@@ -156,6 +163,7 @@ public class BinarySearchTreeGUI<E> extends JPanel implements ActionListener
             g.drawString(current.toString(), currentPoint.x - current.toString().length() * 4, currentPoint.y);
 
             return nodeCount;
+
         }
     }
 }

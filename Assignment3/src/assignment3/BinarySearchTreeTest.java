@@ -19,6 +19,16 @@ public class BinarySearchTreeTest
         // create the binary search tree
         BinarySearchTree<String> tree = new BinarySearchTree();
         
+        // build the tree
+        tree.add("cow");
+        tree.add("bat");
+        tree.add("fox");
+        tree.add("ant");
+        tree.add("cat");
+        tree.add("eel");
+        tree.add("owl");
+        tree.add("fly");
+        
         BinarySearchTreeGUI<String> gui = new BinarySearchTreeGUI(tree);
         
         frame.getContentPane().add(gui);
