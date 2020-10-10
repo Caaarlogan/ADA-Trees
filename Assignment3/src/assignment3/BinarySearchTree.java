@@ -121,6 +121,13 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     { 
     }
     
+    protected void addColor(BinaryTreeNode node)
+    {
+    }
+    
+    protected void insertFixup(BinaryTreeNode newNode)
+    {
+    }
     // adds the element to the sorted set provided it is not already in
    // the set, and returns true if the sorted set did not already
    // contain the element
@@ -131,17 +138,8 @@ public class BinarySearchTree<E> extends AbstractSet<E>
             throw new IllegalArgumentException("Outside view");
         }
         
-        BinaryTreeNode newNode;
-        BinaryTreeNode oNode = (BinaryTreeNode) o;
-        if (oNode.element != null || oNode.element.equals(""))
-        {
-            newNode = oNode;
-        }
-        
-        else
-        {
-            newNode = new BinaryTreeNode(o);
-        }
+        BinaryTreeNode newNode = new BinaryTreeNode(o);
+        addColor(newNode);
         
         List<Boolean> path = new ArrayList();
         
@@ -165,8 +163,6 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                     if (currentNode.leftChild == null)
                     {  // add newNode as leftChild
                         currentNode.leftChild = newNode;
-                        newNode.parent = currentNode;
-                        
                         done = true;
                         added = true;
                     } else
@@ -181,8 +177,6 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                     if (currentNode.rightChild == null)
                     {  // add newNode as rightChild
                         currentNode.rightChild = newNode;
-                        newNode.parent = currentNode;
-                        
                         done = true;
                         added = true;
                     } else
@@ -202,6 +196,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             numElements++;
             newAdd(path, o);
+            insertFixup(newNode);
         }
         return added;
     }

@@ -134,6 +134,12 @@ public class RedBlackTree<E> extends BinarySearchTree
             y.parent.rightChild = y;
     }
 
+    @Override
+    protected void addColor(BinaryTreeNode node)
+    {
+        node.color = Color.red;
+    }
+    
     /**
      * Inserts data into the tree, creating a new node for this data.
      *
@@ -144,12 +150,7 @@ public class RedBlackTree<E> extends BinarySearchTree
      */
     public void insert(E element)
     {
-        BinaryTreeNode newNode = new BinaryTreeNode(element, Color.red);
-        System.out.println(newNode);
-        
-        super.add(newNode);
-        
-        insertFixup(newNode);
+        super.add(element);
     }
 
     /**
@@ -158,14 +159,17 @@ public class RedBlackTree<E> extends BinarySearchTree
      *
      * @param z The node inserted.
      */
+    @Override
     protected void insertFixup(BinaryTreeNode newNode)
     {
         BinaryTreeNode rotateNode = null;
         
-        System.out.println(newNode + " & " + rootNode);
+        //System.out.println(newNode + " & " + rootNode);
         //int outcome = compare(newNode.element, rootNode.element);
         //System.out.println(outcome);
-        System.out.println(newNode.element.getClass());
+        //System.out.println(newNode.element.getClass());
+        
+        
         
         if (compare(newNode.element, rootNode.element) != 0)
         {

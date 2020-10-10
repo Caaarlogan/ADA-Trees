@@ -77,7 +77,6 @@ public class PersistentDynamicSetGUI<E> extends JPanel implements ActionListener
             {
                 int version = (int) versionList.getSelectedValue();
                 root = (BinaryTreeNode) tree.getVersions().get(version);
-                root = (BinaryTreeNode) tree.getVersions().get(version);
                 drawPanel.repaint();
             }
         });
