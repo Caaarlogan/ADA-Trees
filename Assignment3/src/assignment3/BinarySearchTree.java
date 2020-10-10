@@ -8,6 +8,7 @@ package assignment3;
  *
  * @author Andrew Ensor
  */
+import java.awt.Color;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -129,13 +130,27 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             throw new IllegalArgumentException("Outside view");
         }
-        BinaryTreeNode newNode = new BinaryTreeNode(o);
+        
+        BinaryTreeNode newNode;
+        BinaryTreeNode oNode = (BinaryTreeNode) o;
+        if (oNode.element != null || oNode.element.equals(""))
+        {
+            newNode = oNode;
+        }
+        
+        else
+        {
+            newNode = new BinaryTreeNode(o);
+        }
+        
         List<Boolean> path = new ArrayList();
         
         boolean added = false;
         if (rootNode == null)
         {
             rootNode = newNode;
+            System.out.println(rootNode.element.getClass());
+            
             added = true;
         } else
         {  // find where to add newNode
@@ -144,12 +159,14 @@ public class BinarySearchTree<E> extends AbstractSet<E>
             
             while (!done)
             {
-                int comparison = compare(o, currentNode.element);
+                int comparison = compare(newNode.element, currentNode.element);
                 if (comparison < 0) // newNode is less than currentNode
                 {
                     if (currentNode.leftChild == null)
                     {  // add newNode as leftChild
                         currentNode.leftChild = newNode;
+                        newNode.parent = currentNode;
+                        
                         done = true;
                         added = true;
                     } else
@@ -164,6 +181,8 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                     if (currentNode.rightChild == null)
                     {  // add newNode as rightChild
                         currentNode.rightChild = newNode;
+                        newNode.parent = currentNode;
+                        
                         done = true;
                         added = true;
                     } else
@@ -518,6 +537,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     {
 
         public BinaryTreeNode parent, leftChild, rightChild;
+        public Color color;
         public E element;
 
         public BinaryTreeNode(E element)
@@ -526,6 +546,13 @@ public class BinarySearchTree<E> extends AbstractSet<E>
             parent = null;
             leftChild = null;
             rightChild = null;
+            color = null;
+        }
+        
+        public BinaryTreeNode(E element, Color color)
+        {
+            this(element);
+            color = color.red;
         }
 
         // returns a string representation of the node element

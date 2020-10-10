@@ -1,28 +1,20 @@
 package assignment3;
 
-import assignment3.BalancedPDS.RBNode;
+import assignment3.BinarySearchTree.BinaryTreeNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.SortedSet;
 
 /**
  * Almost Complete GUI - just need to finish the code when pressing the buttons
@@ -31,42 +23,74 @@ import java.util.SortedSet;
  *
  * @author sehall
  */
-public class BalancedPDS_GUI<E> extends JPanel
+public class RedBlackTreeGUI<E> extends JPanel implements ActionListener
 {
+    private final JButton addButton, removeButton;
     private DrawPanel drawPanel;
-    private BalancedPDS<E> tree;
-    private BalancedPDS.RBNode root;
-    private int numberNodes = 0;
+    private RedBlackTree tree;
+    private BinaryTreeNode root;
+    private JTextField postFixField;
     public static int PANEL_H = 500;
     public static int PANEL_W = 700;
-    private JLabel nodeCounterLabel;
     private final int BOX_SIZE = 40;
 
-    public BalancedPDS_GUI(BalancedPDS<E> tree)
+    public RedBlackTreeGUI(RedBlackTree tree)
     {
         super(new BorderLayout());
-        
         try
         {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e)
         {
         }
-        
         this.tree = tree;
-        root = ((RBNode) tree.getRoot());
-        numberNodes = tree.size();
+        root = tree.getRoot();
         super.setPreferredSize(new Dimension(PANEL_W, PANEL_H + 30));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setPreferredSize(new Dimension(PANEL_W, 30));
         drawPanel = new DrawPanel();
 
-        super.add(drawPanel, BorderLayout.CENTER);
+        addButton = new JButton("Add");
+        removeButton = new JButton("Remove");
 
-        nodeCounterLabel = new JLabel("Number of Nodes: " + numberNodes);
-        super.add(nodeCounterLabel, BorderLayout.NORTH);
+        addButton.addActionListener((ActionListener) this);
+        removeButton.addActionListener((ActionListener) this);
+
+        postFixField = new JTextField(40);
+
+        buttonPanel.add(postFixField);
+        buttonPanel.add(addButton);
+        buttonPanel.add(removeButton);
+
+        super.add(drawPanel, BorderLayout.CENTER);
+        super.add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent event)
+    {
+        Object source = event.getSource();
+
+        if (source == addButton && !postFixField.getText().equals(""))
+        {   //finish this button event to handle the evaluation and output to infix of the tree 
+            String newString = postFixField.getText();
+            tree.insert(newString);
+            root = tree.getRoot();
+            postFixField.setText("");
+        } else if (source == removeButton && !postFixField.getText().equals(""))
+        {
+            String newString = postFixField.getText();
+            tree.delete(newString);
+            root = tree.getRoot();
+            postFixField.setText("");
+        }
+
+        drawPanel.repaint();
     }
 
     private class DrawPanel extends JPanel
     {
+
         public DrawPanel()
         {
             super();
@@ -79,7 +103,7 @@ public class BalancedPDS_GUI<E> extends JPanel
         {
             super.paintComponent(g);
 
-            if (tree.getRoot() != null)
+            if (root != null)
             {
                 drawTree(g, getWidth());
             }
@@ -90,8 +114,8 @@ public class BalancedPDS_GUI<E> extends JPanel
             drawNode(g, root, BOX_SIZE, 0, 0, new HashMap<>());
         }
 
-        private int drawNode(Graphics g, BinarySearchTree.BinaryTreeNode current,
-                int x, int level, int nodeCount, Map<BinarySearchTree.BinaryTreeNode, Point> map)
+        private int drawNode(Graphics g, BinaryTreeNode current,
+                int x, int level, int nodeCount, Map<BinaryTreeNode, Point> map)
         {
 
             if (current.leftChild != null)
@@ -121,17 +145,17 @@ public class BalancedPDS_GUI<E> extends JPanel
                 g.drawLine(currentX, currentY, rightPoint.x, rightPoint.y - BOX_SIZE / 2);
 
             }
-            g.setColor(Color.WHITE);
+            g.setColor(current.color);
 
             Point currentPoint = map.get(current);
             g.fillRect(currentPoint.x - BOX_SIZE / 2, currentPoint.y - BOX_SIZE / 2, BOX_SIZE, BOX_SIZE);
-            g.setColor(Color.BLACK);
+            g.setColor(Color.white);
             g.drawRect(currentPoint.x - BOX_SIZE / 2, currentPoint.y - BOX_SIZE / 2, BOX_SIZE, BOX_SIZE);
             Font f = new Font("courier new", Font.BOLD, 16);
             g.setFont(f);
             g.drawString(current.toString(), currentPoint.x - current.toString().length() * 4, currentPoint.y);
-            return nodeCount;
 
+            return nodeCount;
         }
     }
 }

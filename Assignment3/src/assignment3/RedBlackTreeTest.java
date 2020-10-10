@@ -6,29 +6,20 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 
 /**
- *
- * @author Jeremiah
+ * @author Carlo Carbonilla
  */
-public class BalancedPDSTest {
+
+public class RedBlackTreeTest
+{
     public static void main(String[] args)
     {
-        JFrame frame = new JFrame("Expression Tree GUI builder");
+        JFrame frame = new JFrame("Red Black Tree GUI builder");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        // create the balanced persistent dynamic set tree
-        BalancedPDS<String> tree = new BalancedPDS();
+        // create the binary search tree
+        RedBlackTree<String> tree = new RedBlackTree();
         
-        // build the tree
-        tree.add("cow");
-        tree.add("fly");
-        tree.add("dog");
-        tree.add("bat");
-        tree.add("fox");
-        tree.add("cat");
-        tree.add("eel");
-        tree.add("ant");
-        
-        BalancedPDS_GUI<String> gui = new BalancedPDS_GUI(tree);
+        RedBlackTreeGUI<String> gui = new RedBlackTreeGUI(tree);
         
         frame.getContentPane().add(gui);
         Toolkit toolkit = Toolkit.getDefaultToolkit();
