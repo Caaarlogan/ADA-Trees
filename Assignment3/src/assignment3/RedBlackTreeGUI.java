@@ -74,13 +74,13 @@ public class RedBlackTreeGUI<E> extends JPanel implements ActionListener
         if (source == addButton && !postFixField.getText().equals(""))
         {   //finish this button event to handle the evaluation and output to infix of the tree 
             String newString = postFixField.getText();
-            tree.insert(newString);
+            tree.add(newString);
             root = tree.getRoot();
             postFixField.setText("");
         } else if (source == removeButton && !postFixField.getText().equals(""))
         {
             String newString = postFixField.getText();
-            tree.delete(newString);
+            tree.remove(newString);
             root = tree.getRoot();
             postFixField.setText("");
         }
@@ -134,6 +134,7 @@ public class RedBlackTreeGUI<E> extends JPanel implements ActionListener
             }
 
             g.setColor(Color.red);
+            
             if (current.leftChild != null)
             {
                 Point leftPoint = map.get(current.leftChild);
@@ -145,6 +146,7 @@ public class RedBlackTreeGUI<E> extends JPanel implements ActionListener
                 g.drawLine(currentX, currentY, rightPoint.x, rightPoint.y - BOX_SIZE / 2);
 
             }
+            
             g.setColor(current.color);
 
             Point currentPoint = map.get(current);

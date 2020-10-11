@@ -171,6 +171,7 @@ public class PersistentDynamicSetGUI<E> extends JPanel implements ActionListener
             }
 
             g.setColor(Color.red);
+            
             if (current.leftChild != null)
             {
                 Point leftPoint = map.get(current.leftChild);

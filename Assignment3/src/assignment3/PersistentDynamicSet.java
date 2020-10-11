@@ -13,7 +13,7 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
 {
 
     private List<BinaryTreeNode> versions;
-
+    
     public PersistentDynamicSet()
     {
         super();
@@ -49,7 +49,7 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
     @Override
     //Creates new version using the last version with a given path and
     //element to add
-    protected void newAdd(List<Boolean> path, E o)
+    protected void versionAdd(List<Boolean> path, E o)
     {
         if (path.isEmpty())
         {
@@ -97,7 +97,7 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
     }
 
     @Override
-    protected void newRemove(List<Boolean> path, List<Boolean> replacePath, Object o)
+    protected void versionRemove(List<Boolean> path, List<Boolean> replacePath, Object o)
     {
         E element = (E) o;
         BinaryTreeNode lastRoot = versions.get(versions.size() - 1); //Get root of last version

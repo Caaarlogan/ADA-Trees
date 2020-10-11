@@ -48,7 +48,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         
         numElements = c.size();
     }
-
+    
     public BinarySearchTree(Comparator<? super E> comparator)
     {
         this();
@@ -111,23 +111,31 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         return inside;
     }
     
-    //Hook method
+    //Hook methods
     protected void notePath(List<Boolean> path, boolean direction)
     {
     }
     
-    //Hook method
-    protected void newAdd(List<Boolean> path, E o)
+    protected void versionAdd(List<Boolean> path, E o)
     { 
     }
     
-    protected void addColor(BinaryTreeNode node)
+    protected void versionRemove(List<Boolean> path, List<Boolean> replacePath, Object o)
     {
     }
     
-    protected void insertFixup(BinaryTreeNode newNode)
+    protected void colorRed(BinaryTreeNode node)
     {
     }
+    
+    protected void rbtAdd(List<Boolean> path)
+    { 
+    }
+    
+    protected void rbtRemove(List<Boolean> path)
+    { 
+    }
+    
     // adds the element to the sorted set provided it is not already in
    // the set, and returns true if the sorted set did not already
    // contain the element
@@ -137,18 +145,15 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             throw new IllegalArgumentException("Outside view");
         }
-        
         BinaryTreeNode newNode = new BinaryTreeNode(o);
-        addColor(newNode);
-        
         List<Boolean> path = new ArrayList();
+        
+        colorRed(newNode);
         
         boolean added = false;
         if (rootNode == null)
         {
             rootNode = newNode;
-            System.out.println(rootNode.element.getClass());
-            
             added = true;
         } else
         {  // find where to add newNode
@@ -157,7 +162,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
             
             while (!done)
             {
-                int comparison = compare(newNode.element, currentNode.element);
+                int comparison = compare(o, currentNode.element);
                 if (comparison < 0) // newNode is less than currentNode
                 {
                     if (currentNode.leftChild == null)
@@ -195,15 +200,15 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         if (added)
         {
             numElements++;
-            newAdd(path, o);
-            insertFixup(newNode);
+            versionAdd(path, o);
+            rbtAdd(path);
         }
         return added;
     }
 
     // performs a comparison of the two elements, using the comparator
     // if not null, otherwise using the compareTo method
-    protected int compare(E element1, E element2)
+    private int compare(E element1, E element2)
     {
         if (comparator != null)
         {
@@ -218,10 +223,6 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             return 0;
         }
-    }
-    
-protected void newRemove(List<Boolean> path, List<Boolean> replacePath, Object o)
-    {
     }
     
     // remove the element from the sorted set and returns true if the
@@ -295,7 +296,8 @@ protected void newRemove(List<Boolean> path, List<Boolean> replacePath, Object o
         if (removed)
         {
             numElements--;
-            newRemove(path, replacePath, o);
+            versionRemove(path, replacePath, o);
+            rbtRemove(path);
         }
         return removed;
     }
@@ -537,23 +539,16 @@ protected void newRemove(List<Boolean> path, List<Boolean> replacePath, Object o
     public class BinaryTreeNode
     {
 
-        public BinaryTreeNode parent, leftChild, rightChild;
-        public Color color;
+        public BinaryTreeNode leftChild, rightChild;
         public E element;
+        public Color color;
 
         public BinaryTreeNode(E element)
         {
             this.element = element;
-            parent = null;
             leftChild = null;
             rightChild = null;
             color = null;
-        }
-        
-        public BinaryTreeNode(E element, Color color)
-        {
-            this(element);
-            color = color.red;
         }
 
         // returns a string representation of the node element
