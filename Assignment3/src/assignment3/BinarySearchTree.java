@@ -128,7 +128,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     {
     }
     
-    protected void rbtAdd(List<Boolean> path)
+    protected void rbtAddFixup(List<Boolean> path)
     { 
     }
     
@@ -201,7 +201,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             numElements++;
             versionAdd(path, o);
-            rbtAdd(path);
+            rbtAddFixup(path);
         }
         return added;
     }

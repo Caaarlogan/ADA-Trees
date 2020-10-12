@@ -1,6 +1,7 @@
 package assignment3;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,13 +19,27 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
     {
         path.add(direction);
     }
+    
+    //Update path for fixup after rotating a parent node
+    protected void pathParentRotate(List<Boolean> path)
+    {
+        boolean oldDirection = path.get(path.size() - 1);
+        path.remove(path.size() - 1);
+        path.add(!oldDirection);
+    }
+    
+    //Update path for fixup after rotating a grandparent node
+    protected void pathGrandparentRotate(List<Boolean> path)
+    {
+        path.remove(path.size() - 2);
+    }
 
     protected void colorRed(BinaryTreeNode node)
     {
         node.color = RED;
     }
 
-    protected void rbtAdd(List<Boolean> path)
+    protected void rbtAddFixup(List<Boolean> path)
     {
         BinaryTreeNode greatGrandParent = null;
         BinaryTreeNode grandParent = null;
@@ -32,7 +47,10 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
         BinaryTreeNode uncle = null;
         BinaryTreeNode current = rootNode;
         boolean whichUncle = false;
-
+        
+        List<Boolean> newPath = path;
+        boolean repeatRbtFixup = true;
+        
         for (boolean direction : path)
         {
             greatGrandParent = grandParent;
@@ -49,7 +67,10 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
         //if true, uncle is right child of grandparent
         if (path.size() > 1)
             whichUncle = !path.get(path.size() - 2);
-
+        
+        if (current == rootNode || parent.color.equals(BLACK))
+            repeatRbtFixup = false;
+        
         while (parent != null && parent.color.equals(RED))
         {
             //if uncle is right child, parent is left child
@@ -75,13 +96,25 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
                     parent = grandParent;
                     grandParent = greatGrandParent;
                     leftRotate(current, parent);
+                    
+                    if (parent.rightChild.color == RED)
+                    {
+                        pathParentRotate(path);
+                        newPath = path; 
+                    }
                 }
 
                 parent.color = BLACK;
-                grandParent.color = RED;
-                rightRotate(grandParent, greatGrandParent);
+                if (parent != rootNode)
+                {
+                    grandParent.color = RED;
+                    rightRotate(grandParent, greatGrandParent);
+                    
+                    pathGrandparentRotate(path);
+                    newPath = path;
+                }
             }
-            else
+            else if (!whichUncle)
             {
                 if (parent.leftChild == current)
                 {
@@ -89,15 +122,30 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
                     parent = grandParent;
                     grandParent = greatGrandParent;
                     rightRotate(current, parent);
+                    
+                    if (parent.rightChild.color == RED)
+                    {
+                        pathParentRotate(path);
+                        newPath = path; 
+                    }
                 }
 
                 parent.color = BLACK;
-                grandParent.color = RED;
-                leftRotate(grandParent, greatGrandParent);
+                if (parent != rootNode)
+                {
+                    grandParent.color = RED;
+                    leftRotate(grandParent, greatGrandParent);
+                    
+                    pathGrandparentRotate(path);
+                    newPath = path;
+                }
             }
         }
 
         rootNode.color = BLACK;
+        
+        if (repeatRbtFixup)
+            rbtAddFixup(newPath);
     }
     
     //Feel free to edit parameters of this hook method to your fitting
