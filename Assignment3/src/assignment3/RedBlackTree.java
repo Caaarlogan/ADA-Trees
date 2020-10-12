@@ -31,7 +31,8 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
     //Update path for fixup after rotating a grandparent node
     protected void pathGrandparentRotate(List<Boolean> path)
     {
-        path.remove(path.size() - 2);
+        path.remove(path.size() - 1);
+        path.remove(path.size() - 1);
     }
 
     protected void colorRed(BinaryTreeNode node)
@@ -150,8 +151,9 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
     
     //Feel free to edit parameters of this hook method to your fitting
     //Have a look at Persistent Dynamic Set remove for inspiration?
-    protected void rbtRemove(List<Boolean> path)
+    protected void rbtRemoveFixup(List<Boolean> path)
     {
+        
     }
 
     private void rightRotate(BinaryTreeNode parent, BinaryTreeNode grandParent)

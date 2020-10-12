@@ -132,7 +132,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     { 
     }
     
-    protected void rbtRemove(List<Boolean> path)
+    protected void rbtRemoveFixup(List<Boolean> path)
     { 
     }
     
@@ -297,7 +297,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             numElements--;
             versionRemove(path, replacePath, o);
-            rbtRemove(path);
+            rbtRemoveFixup(path);
         }
         return removed;
     }
