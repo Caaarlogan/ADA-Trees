@@ -128,11 +128,15 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     {
     }
     
-    protected void rbtAddFixup(List<Boolean> path)
+    protected void colorBlack(BinaryTreeNode node)
+    {
+    }
+    
+    protected void rbtAdd(List<Boolean> path)
     { 
     }
     
-    protected void rbtRemoveFixup(List<Boolean> path)
+    protected void rbtRemove(List<Boolean> path)
     { 
     }
     
@@ -148,7 +152,10 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         BinaryTreeNode newNode = new BinaryTreeNode(o);
         List<Boolean> path = new ArrayList();
         
-        colorRed(newNode);
+        if(rootNode == null)
+            colorBlack(newNode);
+        else
+            colorRed(newNode);
         
         boolean added = false;
         if (rootNode == null)
@@ -201,7 +208,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             numElements++;
             versionAdd(path, o);
-            rbtAddFixup(path);
+            rbtAdd(path);
         }
         return added;
     }
@@ -297,7 +304,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             numElements--;
             versionRemove(path, replacePath, o);
-            rbtRemoveFixup(path);
+            rbtRemove(path);
         }
         return removed;
     }
