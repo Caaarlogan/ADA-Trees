@@ -1,7 +1,6 @@
 package assignment3;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,141 +18,129 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
     {
         path.add(direction);
     }
-    
-    //Update path for fixup after rotating a parent node
-    protected void pathParentRotate(List<Boolean> path)
-    {
-        boolean oldDirection = path.get(path.size() - 1);
-        path.remove(path.size() - 1);
-        path.add(!oldDirection);
-    }
-    
-    //Update path for fixup after rotating a grandparent node
-    protected void pathGrandparentRotate(List<Boolean> path)
-    {
-        path.remove(path.size() - 1);
-        path.remove(path.size() - 1);
-    }
 
     protected void colorRed(BinaryTreeNode node)
     {
         node.color = RED;
     }
 
-    protected void rbtAddFixup(List<Boolean> path)
+    protected void colorBlack(BinaryTreeNode node)
     {
-        BinaryTreeNode greatGrandParent = null;
-        BinaryTreeNode grandParent = null;
-        BinaryTreeNode parent = null;
-        BinaryTreeNode uncle = null;
-        BinaryTreeNode current = rootNode;
-        boolean whichUncle = false;
-        
-        List<Boolean> newPath = path;
-        boolean repeatRbtFixup = true;
-        
-        for (boolean direction : path)
-        {
-            greatGrandParent = grandParent;
-            grandParent = parent;
-            parent = current;
-
-            if (!direction)
-                current = parent.leftChild;
-            else
-                current = parent.rightChild;
-        }
-
-        //if false, uncle is left child of grandparent
-        //if true, uncle is right child of grandparent
-        if (path.size() > 1)
-            whichUncle = !path.get(path.size() - 2);
-        
-        if (current == rootNode || parent.color.equals(BLACK))
-            repeatRbtFixup = false;
-        
-        while (parent != null && parent.color.equals(RED))
-        {
-            //if uncle is right child, parent is left child
-            if (whichUncle)
-                uncle = grandParent.rightChild;
-            else
-                uncle = grandParent.leftChild;
-
-            if (uncle != null && uncle.color.equals(RED))
-            {
-                parent.color = BLACK;
-                uncle.color = BLACK;
-                grandParent.color = RED;
-
-                //repeat process with grandparent
-                path = path.subList(0, path.size() - 2);
-            }
-            else if (whichUncle)
-            {
-                if (parent.rightChild == current)
-                {
-                    current = parent;
-                    parent = grandParent;
-                    grandParent = greatGrandParent;
-                    leftRotate(current, parent);
-                    
-                    if (parent.rightChild.color == RED)
-                    {
-                        pathParentRotate(path);
-                        newPath = path; 
-                    }
-                }
-
-                parent.color = BLACK;
-                if (parent != rootNode)
-                {
-                    grandParent.color = RED;
-                    rightRotate(grandParent, greatGrandParent);
-                    
-                    pathGrandparentRotate(path);
-                    newPath = path;
-                }
-            }
-            else if (!whichUncle)
-            {
-                if (parent.leftChild == current)
-                {
-                    current = parent;
-                    parent = grandParent;
-                    grandParent = greatGrandParent;
-                    rightRotate(current, parent);
-                    
-                    if (parent.rightChild.color == RED)
-                    {
-                        pathParentRotate(path);
-                        newPath = path; 
-                    }
-                }
-
-                parent.color = BLACK;
-                if (parent != rootNode)
-                {
-                    grandParent.color = RED;
-                    leftRotate(grandParent, greatGrandParent);
-                    
-                    pathGrandparentRotate(path);
-                    newPath = path;
-                }
-            }
-        }
-
-        rootNode.color = BLACK;
-        
-        if (repeatRbtFixup)
-            rbtAddFixup(newPath);
+        node.color = BLACK;
     }
-    
+
+    protected void rbtAdd(List<Boolean> path)
+    {
+        boolean finished = false;
+
+        while (!finished)
+            if (path.size() > 1)
+            {
+                BinaryTreeNode greatGrandParent = null;
+                BinaryTreeNode grandParent = null;
+                BinaryTreeNode parent = null;
+                BinaryTreeNode uncle = null;
+                BinaryTreeNode current = rootNode;
+
+                for (boolean direction : path)
+                {
+                    greatGrandParent = grandParent;
+                    grandParent = parent;
+                    parent = current;
+
+                    if (!direction)
+                        current = parent.leftChild;
+                    else
+                        current = parent.rightChild;
+                }
+                
+                if (parent != null && parent.color.equals(RED))
+                {
+                    if (parent == grandParent.leftChild)
+                        uncle = grandParent.rightChild;
+                    else
+                        uncle = grandParent.leftChild;
+                    
+                    //Case One
+                    if (uncle != null && uncle.color.equals(RED))
+                    {
+                        parent.color = BLACK;
+                        uncle.color = BLACK;
+                        grandParent.color = RED;
+
+                        //repeat process with grandparent
+                        path = path.subList(0, path.size() - 2);
+                    }
+
+                    //Cases Two & Three
+                    //if parent is left child of grandParent
+                    else if (parent == grandParent.leftChild)
+                    {
+                        //Case Two
+                        if (current == parent.rightChild)
+                        {
+                            leftRotate(parent, grandParent);
+                            int size = path.size();
+                            boolean parentPath = path.get(path.size()-2);
+                            boolean currentPath = path.get(path.size()-1);
+                            path.add(size-1, parentPath);
+                            path.add(size-2, currentPath);
+                            path.remove(path.size()-1);
+                            path.remove(path.size()-1);
+                            current.color = BLACK;
+                            grandParent.color = RED;
+                            rightRotate(grandParent, greatGrandParent);
+                            path.remove(path.size()-2);
+                        }
+                        //Case Three
+                        else
+                        {
+                            parent.color = BLACK;
+                            grandParent.color = RED;
+                            rightRotate(grandParent, greatGrandParent);
+                            path.remove(path.size()-2);
+                        }
+                    }
+                    //if parent is right child of grandParent
+                    else
+                        //Case Two
+                        if (current == parent.leftChild)
+                        {
+                            rightRotate(parent, grandParent);
+                            int size = path.size();
+                            boolean parentPath = path.get(path.size()-2);
+                            boolean currentPath = path.get(path.size()-1);
+                            path.add(size-1, parentPath);
+                            path.add(size-2, currentPath);
+                            path.remove(path.size()-1);
+                            path.remove(path.size()-1);
+                            current.color = BLACK;
+                            grandParent.color = RED;
+                            leftRotate(grandParent, greatGrandParent);
+                            path.remove(path.size()-2);
+                        }
+                        //Case Three
+                        else
+                        {
+                            parent.color = BLACK;
+                            grandParent.color = RED;
+                            leftRotate(grandParent, greatGrandParent);
+                            path.remove(path.size()-2);
+                        }
+                }
+                else
+                    finished = true;
+
+                rootNode.color = BLACK;
+            }
+            else
+                finished = true;
+    }
+
     //Feel free to edit parameters of this hook method to your fitting
     //Have a look at Persistent Dynamic Set remove for inspiration?
-    protected void rbtRemoveFixup(List<Boolean> path)
+    protected void rbtRemove(List<Boolean> path)
     {
-        
     }
 
     private void rightRotate(BinaryTreeNode parent, BinaryTreeNode grandParent)
