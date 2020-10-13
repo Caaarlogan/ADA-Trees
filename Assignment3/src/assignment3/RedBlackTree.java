@@ -136,11 +136,124 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
             else
                 finished = true;
     }
-
-    //Feel free to edit parameters of this hook method to your fitting
-    //Have a look at Persistent Dynamic Set remove for inspiration?
-    protected void rbtRemove(List<Boolean> path)
+    
+    protected void rbtRemove(List<Boolean> path, BinaryTreeNode removalNode)
     {
+    	//boolean finished = false;
+    	BinaryTreeNode parent = null;
+    	BinaryTreeNode sibling = null;
+    	BinaryTreeNode current = rootNode;
+    	
+    	boolean siblingChildrenCheck;
+    	boolean caseThreeLoop = false;
+    	
+    	for (boolean direction : path)
+        {
+            parent = current;
+    		
+            if (!direction)
+                current = parent.leftChild;
+            else
+                current = parent.rightChild;
+        }
+    	
+    	//Case One
+    	//check if removal node and replacement node are different colors
+    	if (current.color == RED)
+            current.color = BLACK;
+    	else // current.color == BLACK
+    	{
+            while (!caseThreeLoop) {
+                if (current == parent.leftChild)
+                    sibling = parent.rightChild;
+                else // current == parent.rightChild;
+                    sibling = parent.leftChild;
+
+                //Case Two
+                if (sibling.color == RED)
+                {
+                    sibling.color = BLACK;
+                    parent.color = RED;
+
+                    if (current == parent.leftChild)
+                        //Test
+                        leftRotate(sibling, parent);
+                    else
+                        rightRotate(sibling, parent);
+
+                    if (current == parent.leftChild)
+                        sibling = parent.rightChild;
+                    else
+                        sibling = parent.leftChild;
+                }
+
+                //Case Three
+                //At this stage, sibling's color is currently set as BLACK
+                if (sibling.leftChild.color == BLACK && sibling.rightChild.color == BLACK)
+                {
+                    sibling.color = RED;
+                    current = parent;
+
+                    if (current.color == RED)
+                        current.color = BLACK;
+                    else
+                        caseThreeLoop = true;
+                }
+
+                if (!caseThreeLoop)
+                {
+                    //Check sibling children for Case Four
+                    if (current == parent.leftChild)
+                    siblingChildrenCheck = sibling.leftChild.color == RED && sibling.rightChild.color == BLACK;
+                    else
+                        siblingChildrenCheck = sibling.rightChild.color == RED && sibling.leftChild.color == BLACK;
+
+                    //Case Four
+                    if (siblingChildrenCheck)
+                    {
+                        if (current == parent.leftChild)
+                            sibling.leftChild.color = BLACK;
+                        else
+                            sibling.rightChild.color = BLACK;
+
+                        sibling.color = RED;
+
+                        if (current == parent.leftChild)
+                            rightRotate(sibling.rightChild, sibling);
+                        else
+                            leftRotate(sibling.leftChild, sibling);
+
+                        if (current == parent.leftChild)
+                            sibling = parent.rightChild;
+                        else
+                            sibling = parent.leftChild;
+                    }
+
+                    //Check sibling children for Case Five
+                    if (current == parent.leftChild)
+                        siblingChildrenCheck = sibling.rightChild.color == RED;
+                    else
+                        siblingChildrenCheck = sibling.leftChild.color == RED;
+
+                    //Case Five
+                    if (siblingChildrenCheck)
+                    {
+                        sibling.color = parent.color;
+                        parent.color = BLACK;
+
+                        if (current == parent.leftChild)
+                            sibling.rightChild.color = BLACK;
+                        else
+                            sibling.leftChild.color = BLACK;
+
+                        if (current == parent.leftChild)
+                            leftRotate(sibling, parent);
+                        else
+                            rightRotate(sibling, parent);
+                    }
+                }
+            }
+    	}
     }
 
     private void rightRotate(BinaryTreeNode parent, BinaryTreeNode grandParent)

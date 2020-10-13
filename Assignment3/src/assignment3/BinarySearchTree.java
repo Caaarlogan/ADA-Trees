@@ -140,6 +140,10 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     { 
     }
     
+    protected void rbtRemove(List<Boolean> path, BinaryTreeNode removalNode)
+    { 
+    }
+    
     // adds the element to the sorted set provided it is not already in
    // the set, and returns true if the sorted set did not already
    // contain the element
@@ -244,7 +248,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         
         List<Boolean> path = new ArrayList();
         List<Boolean> replacePath = new ArrayList();
-        
+        BinaryTreeNode removalNode = null;
         
         boolean removed = false;
         
@@ -257,7 +261,6 @@ public class BinarySearchTree<E> extends AbstractSet<E>
             } else
             {  // search for the element o
                 BinaryTreeNode parentNode = rootNode;
-                BinaryTreeNode removalNode;
                 // determine whether to traverse to left or right of root
                 if (compare(element, rootNode.element) < 0)
                 {
@@ -304,7 +307,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             numElements--;
             versionRemove(path, replacePath, o);
-            rbtRemove(path);
+            rbtRemove(path, removalNode);
         }
         return removed;
     }
