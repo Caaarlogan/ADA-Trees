@@ -29,7 +29,7 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
         node.color = BLACK;
     }
 
-    protected void rbtAdd(List<Boolean> path)
+    protected void rbtAdd(List<Boolean> path, E o)
     {
         boolean finished = false;
 
@@ -137,7 +137,7 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
                 finished = true;
     }
     
-    protected void rbtRemove(List<Boolean> path, BinaryTreeNode removalNode)
+    protected void rbtRemove(List<Boolean> path)
     {
     	//boolean finished = false;
     	BinaryTreeNode parent = null;
@@ -159,7 +159,7 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
     	
     	//Case One
     	//check if removal node and replacement node are different colors
-    	if (current.color == RED)
+    	if (current.color.equals(RED))
             current.color = BLACK;
     	else // current.color == BLACK
     	{
@@ -170,7 +170,7 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
                     sibling = parent.leftChild;
 
                 //Case Two
-                if (sibling.color == RED)
+                if (sibling.color.equals(RED))
                 {
                     sibling.color = BLACK;
                     parent.color = RED;
@@ -189,12 +189,12 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
 
                 //Case Three
                 //At this stage, sibling's color is currently set as BLACK
-                if (sibling.leftChild.color == BLACK && sibling.rightChild.color == BLACK)
+                if (sibling.leftChild.color.equals(BLACK) && sibling.rightChild.color.equals(BLACK))
                 {
                     sibling.color = RED;
                     current = parent;
 
-                    if (current.color == RED)
+                    if (current.color.equals(RED))
                         current.color = BLACK;
                     else
                         caseThreeLoop = true;
@@ -204,9 +204,9 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
                 {
                     //Check sibling children for Case Four
                     if (current == parent.leftChild)
-                    siblingChildrenCheck = sibling.leftChild.color == RED && sibling.rightChild.color == BLACK;
+                    siblingChildrenCheck = sibling.leftChild.color.equals(RED) && sibling.rightChild.color.equals(BLACK);
                     else
-                        siblingChildrenCheck = sibling.rightChild.color == RED && sibling.leftChild.color == BLACK;
+                        siblingChildrenCheck = sibling.rightChild.color.equals(RED) && sibling.leftChild.color.equals(BLACK);
 
                     //Case Four
                     if (siblingChildrenCheck)
@@ -231,9 +231,9 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
 
                     //Check sibling children for Case Five
                     if (current == parent.leftChild)
-                        siblingChildrenCheck = sibling.rightChild.color == RED;
+                        siblingChildrenCheck = sibling.rightChild.color.equals(RED);
                     else
-                        siblingChildrenCheck = sibling.leftChild.color == RED;
+                        siblingChildrenCheck = sibling.leftChild.color.equals(RED);
 
                     //Case Five
                     if (siblingChildrenCheck)

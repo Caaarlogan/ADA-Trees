@@ -59,37 +59,37 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
         else
         {
             //Get root of last version
-            BinaryTreeNode currentLast = versions.get(versions.size() - 1);
+            BinaryTreeNode lastCurrent = versions.get(versions.size() - 1);
 
             //Create new root and current node
-            BinaryTreeNode newRoot = new BinaryTreeNode(currentLast.element);
-            BinaryTreeNode currentNew = newRoot;
+            BinaryTreeNode newRoot = new BinaryTreeNode(lastCurrent.element);
+            BinaryTreeNode newCurrent = newRoot;
 
             //Traverse through path, add new element when child node is null
             for (boolean direction : path)
                 if (!direction)
                 {
-                    currentNew.rightChild = currentLast.rightChild;
+                    newCurrent.rightChild = lastCurrent.rightChild;
 
-                    if (currentLast.leftChild != null)
-                        currentNew.leftChild = new BinaryTreeNode(currentLast.leftChild.element);
+                    if (lastCurrent.leftChild != null)
+                        newCurrent.leftChild = new BinaryTreeNode(lastCurrent.leftChild.element);
                     else
-                        currentNew.leftChild = new BinaryTreeNode(o);
+                        newCurrent.leftChild = new BinaryTreeNode(o);
 
-                    currentLast = currentLast.leftChild;
-                    currentNew = currentNew.leftChild;
+                    lastCurrent = lastCurrent.leftChild;
+                    newCurrent = newCurrent.leftChild;
                 }
                 else
                 {
-                    currentNew.leftChild = currentLast.leftChild;
+                    newCurrent.leftChild = lastCurrent.leftChild;
 
-                    if (currentLast.rightChild != null)
-                        currentNew.rightChild = new BinaryTreeNode(currentLast.rightChild.element);
+                    if (lastCurrent.rightChild != null)
+                        newCurrent.rightChild = new BinaryTreeNode(lastCurrent.rightChild.element);
                     else
-                        currentNew.rightChild = new BinaryTreeNode(o);
+                        newCurrent.rightChild = new BinaryTreeNode(o);
 
-                    currentLast = currentLast.rightChild;
-                    currentNew = currentNew.rightChild;
+                    lastCurrent = lastCurrent.rightChild;
+                    newCurrent = newCurrent.rightChild;
                 }
 
             versions.add(newRoot);

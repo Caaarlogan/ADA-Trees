@@ -132,7 +132,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     {
     }
     
-    protected void rbtAdd(List<Boolean> path)
+    protected void rbtAdd(List<Boolean> path, E o)
     { 
     }
     
@@ -210,9 +210,11 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         }
         if (added)
         {
+            List<Boolean> path2 = new ArrayList(path);
+            
             numElements++;
-            versionAdd(path, o);
-            rbtAdd(path);
+            rbtAdd(path, o);
+            versionAdd(path2, o);
         }
         return added;
     }
@@ -307,7 +309,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             numElements--;
             versionRemove(path, replacePath, o);
-            rbtRemove(path, removalNode);
+            rbtRemove(path);
         }
         return removed;
     }
