@@ -154,8 +154,12 @@ public class PersistentDynamicSetGUI<E> extends JPanel implements ActionListener
         private int drawNode(Graphics g, BinaryTreeNode current,
                 int x, int level, int nodeCount, Map<BinaryTreeNode, Point> map)
         {
-
-            if (current.leftChild != null)
+            System.out.println("R " + root);
+            System.out.println(current);
+            System.out.println(current.leftChild);
+            System.out.println(current.leftChild.color);
+            
+            if (current.leftChild.element != null)
             {
                 nodeCount = drawNode(g, current.leftChild, x, level + 1, nodeCount, map);
             }
@@ -165,19 +169,19 @@ public class PersistentDynamicSetGUI<E> extends JPanel implements ActionListener
             nodeCount++;
             map.put(current, new Point(currentX, currentY));
 
-            if (current.rightChild != null)
+            if (current.rightChild.element != null)
             {
                 nodeCount = drawNode(g, current.rightChild, x, level + 1, nodeCount, map);
             }
 
             g.setColor(Color.red);
             
-            if (current.leftChild != null)
+            if (current.leftChild.element != null)
             {
                 Point leftPoint = map.get(current.leftChild);
                 g.drawLine(currentX, currentY, leftPoint.x, leftPoint.y - BOX_SIZE / 2);
             }
-            if (current.rightChild != null)
+            if (current.rightChild.element != null)
             {
                 Point rightPoint = map.get(current.rightChild);
                 g.drawLine(currentX, currentY, rightPoint.x, rightPoint.y - BOX_SIZE / 2);

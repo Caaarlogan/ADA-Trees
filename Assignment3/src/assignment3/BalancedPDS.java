@@ -265,6 +265,12 @@ public class BalancedPDS<E> extends RedBlackTree<E>
             }
         }
     }
+    
+    @Override
+    protected void versionRemove(List<Boolean> path, List<Boolean> replacePath, Object o)
+    {
+        
+    }
 
     private BinaryTreeNode rightRotate(BinaryTreeNode parent, BinaryTreeNode grandParent)
     {

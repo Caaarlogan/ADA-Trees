@@ -137,7 +137,7 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
                 finished = true;
     }
     
-    protected void rbtRemove(List<Boolean> path)
+    protected void rbtRemove(List<Boolean> path, BinaryTreeNode removalNode)
     {
     	//boolean finished = false;
     	BinaryTreeNode parent = null;
@@ -145,10 +145,13 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
     	BinaryTreeNode current = rootNode;
     	
     	boolean siblingChildrenCheck;
+        boolean caseEnd = false;
     	boolean caseThreeLoop = false;
+        boolean recheckCases = false;
     	
     	for (boolean direction : path)
         {
+            System.out.println("This is at " + current);
             parent = current;
     		
             if (!direction)
@@ -156,72 +159,53 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
             else
                 current = parent.rightChild;
         }
+        
+        if (removalNode.color.equals(RED))
+        {
+            if (current.color.equals(RED) || current.element == null)
+                caseEnd = true;
+            else
+                current.color = RED;
+        }
+        else // current.color == BLACK
+        {
+            if (current.color.equals(RED))
+            {
+                System.out.println(current + " becomes BLACK");
+                current.color = BLACK;
+                caseEnd = true;
+            }
+        }
     	
-    	//Case One
-    	//check if removal node and replacement node are different colors
-    	if (current.color.equals(RED))
-            current.color = BLACK;
-    	else // current.color == BLACK
-    	{
-            while (!caseThreeLoop) {
-                if (current == parent.leftChild)
-                    sibling = parent.rightChild;
-                else // current == parent.rightChild;
-                    sibling = parent.leftChild;
+        if (!caseEnd)
+        {
+            
+            //Case One
+            //check if removal node and replacement node are different colors
+            if (current.color.equals(RED))
+                current.color = BLACK;
+            else // current.color == BLACK
+            {
+                System.out.println("Root " + rootNode);
+                System.out.println("Curr " + current);
 
-                //Case Two
-                if (sibling.color.equals(RED))
-                {
-                    sibling.color = BLACK;
-                    parent.color = RED;
-
-                    if (current == parent.leftChild)
-                        //Test
-                        leftRotate(sibling, parent);
-                    else
-                        rightRotate(sibling, parent);
-
+                while (!caseThreeLoop) {
                     if (current == parent.leftChild)
                         sibling = parent.rightChild;
-                    else
+                    else // current == parent.rightChild;
                         sibling = parent.leftChild;
-                }
 
-                //Case Three
-                //At this stage, sibling's color is currently set as BLACK
-                if (sibling.leftChild.color.equals(BLACK) && sibling.rightChild.color.equals(BLACK))
-                {
-                    sibling.color = RED;
-                    current = parent;
-
-                    if (current.color.equals(RED))
-                        current.color = BLACK;
-                    else
-                        caseThreeLoop = true;
-                }
-
-                if (!caseThreeLoop)
-                {
-                    //Check sibling children for Case Four
-                    if (current == parent.leftChild)
-                    siblingChildrenCheck = sibling.leftChild.color.equals(RED) && sibling.rightChild.color.equals(BLACK);
-                    else
-                        siblingChildrenCheck = sibling.rightChild.color.equals(RED) && sibling.leftChild.color.equals(BLACK);
-
-                    //Case Four
-                    if (siblingChildrenCheck)
+                    //Case Two
+                    if (sibling.color.equals(RED))
                     {
-                        if (current == parent.leftChild)
-                            sibling.leftChild.color = BLACK;
-                        else
-                            sibling.rightChild.color = BLACK;
-
-                        sibling.color = RED;
+                        sibling.color = BLACK;
+                        parent.color = RED;
 
                         if (current == parent.leftChild)
-                            rightRotate(sibling.rightChild, sibling);
+                            //Test
+                            leftRotate(sibling, parent);
                         else
-                            leftRotate(sibling.leftChild, sibling);
+                            rightRotate(sibling, parent);
 
                         if (current == parent.leftChild)
                             sibling = parent.rightChild;
@@ -229,31 +213,86 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
                             sibling = parent.leftChild;
                     }
 
-                    //Check sibling children for Case Five
-                    if (current == parent.leftChild)
-                        siblingChildrenCheck = sibling.rightChild.color.equals(RED);
-                    else
-                        siblingChildrenCheck = sibling.leftChild.color.equals(RED);
+                    //Case Three
+                    //At this stage, sibling's color is currently set as BLACK
 
-                    //Case Five
-                    if (siblingChildrenCheck)
+                    System.out.println("1 " + sibling);
+                    System.out.println("2 " + sibling.leftChild);
+                    System.out.println("3 " + sibling.leftChild.color);
+
+                    //boolean siblingsNotNil = sibling.leftChild.element != null && sibling.rightChild.element
+                    
+                    if (sibling.leftChild.color.equals(BLACK) && sibling.rightChild.color.equals(BLACK))
                     {
-                        sibling.color = parent.color;
-                        parent.color = BLACK;
+                        sibling.color = RED;
+                        current = parent;
 
-                        if (current == parent.leftChild)
-                            sibling.rightChild.color = BLACK;
-                        else
-                            sibling.leftChild.color = BLACK;
+                        if (current.color.equals(RED))
+                        {
+                            current.color = BLACK;
+                            caseThreeLoop = true;
+                            recheckCases = true;
+                        }
+                    }
 
-                        if (current == parent.leftChild)
-                            leftRotate(sibling, parent);
-                        else
-                            rightRotate(sibling, parent);
+                    if (!recheckCases)
+                    {
+                        if (!caseThreeLoop)
+                        {
+                            //Check sibling children for Case Four
+                            if (current == parent.leftChild)
+                                siblingChildrenCheck = sibling.leftChild.color.equals(RED) && sibling.rightChild.color.equals(BLACK);
+                            else
+                                siblingChildrenCheck = sibling.rightChild.color.equals(RED) && sibling.leftChild.color.equals(BLACK);
+
+                            //Case Four
+                            if (siblingChildrenCheck)
+                            {
+                                if (current == parent.leftChild)
+                                    sibling.leftChild.color = BLACK;
+                                else
+                                    sibling.rightChild.color = BLACK;
+
+                                sibling.color = RED;
+
+                                if (current == parent.leftChild)
+                                    rightRotate(sibling.rightChild, sibling);
+                                else
+                                    leftRotate(sibling.leftChild, sibling);
+
+                                if (current == parent.leftChild)
+                                    sibling = parent.rightChild;
+                                else
+                                    sibling = parent.leftChild;
+                            }
+
+                            //Check sibling children for Case Five
+                            if (current == parent.leftChild)
+                                siblingChildrenCheck = sibling.rightChild.color.equals(RED);
+                            else
+                                siblingChildrenCheck = sibling.leftChild.color.equals(RED);
+
+                            //Case Five
+                            if (siblingChildrenCheck)
+                            {
+                                sibling.color = parent.color;
+                                parent.color = BLACK;
+
+                                if (current == parent.leftChild)
+                                    sibling.rightChild.color = BLACK;
+                                else
+                                    sibling.leftChild.color = BLACK;
+
+                                if (current == parent.leftChild)
+                                    leftRotate(sibling, parent);
+                                else
+                                    rightRotate(sibling, parent);
+                            }
+                        }
                     }
                 }
             }
-    	}
+        }
     }
 
     private void rightRotate(BinaryTreeNode parent, BinaryTreeNode grandParent)
@@ -271,6 +310,7 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
             grandParent.leftChild = current;
 
         current.rightChild = parent;
+        setChildrenNil(parent);
     }
 
     private void leftRotate(BinaryTreeNode parent, BinaryTreeNode grandParent)
@@ -288,5 +328,6 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
             grandParent.rightChild = current;
 
         current.leftChild = parent;
+        setChildrenNil(parent);
     }
 }

@@ -71,7 +71,7 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
                 {
                     newCurrent.rightChild = lastCurrent.rightChild;
 
-                    if (lastCurrent.leftChild != null)
+                    if (lastCurrent.leftChild.element != null)
                         newCurrent.leftChild = new BinaryTreeNode(lastCurrent.leftChild.element);
                     else
                         newCurrent.leftChild = new BinaryTreeNode(o);
@@ -83,7 +83,7 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
                 {
                     newCurrent.leftChild = lastCurrent.leftChild;
 
-                    if (lastCurrent.rightChild != null)
+                    if (lastCurrent.rightChild.element != null)
                         newCurrent.rightChild = new BinaryTreeNode(lastCurrent.rightChild.element);
                     else
                         newCurrent.rightChild = new BinaryTreeNode(o);
@@ -170,22 +170,22 @@ public class PersistentDynamicSet<E> extends BinarySearchTree<E>
             whichChild = path.get(path.size() - 1);
 
         //if remove node has no children
-        if (lastRemove.leftChild == null && lastRemove.rightChild == null)
+        if (lastRemove.leftChild.element == null && lastRemove.rightChild.element == null)
             if (removeRoot)
-                newRoot = null;
+                newRoot.element = null;
             else if (!whichChild)
-                newParent.leftChild = null;
+                newParent.leftChild.element = null;
             else
-                newParent.rightChild = null;
+                newParent.rightChild.element = null;
         //if remove node has one children
-        else if (lastRemove.leftChild == null && lastRemove.rightChild != null)
+        else if (lastRemove.leftChild.element == null && lastRemove.rightChild.element != null)
             if (removeRoot)
                 newRoot = lastRoot.rightChild;
             else if (!whichChild)
                 newParent.leftChild = lastRemove.rightChild;
             else
                 newParent.rightChild = lastRemove.rightChild;
-        else if (lastRemove.leftChild != null && lastRemove.rightChild == null)
+        else if (lastRemove.leftChild.element != null && lastRemove.rightChild.element == null)
             if (removeRoot)
                 newRoot = lastRoot.leftChild;
             else if (!whichChild)

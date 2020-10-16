@@ -125,7 +125,7 @@ public class BinarySearchTreeGUI<E> extends JPanel implements ActionListener
                 int x, int level, int nodeCount, Map<BinaryTreeNode, Point> map)
         {
 
-            if (current.leftChild != null)
+            if (current.leftChild.element != null)
             {
                 nodeCount = drawNode(g, current.leftChild, x, level + 1, nodeCount, map);
             }
@@ -135,18 +135,18 @@ public class BinarySearchTreeGUI<E> extends JPanel implements ActionListener
             nodeCount++;
             map.put(current, new Point(currentX, currentY));
 
-            if (current.rightChild != null)
+            if (current.rightChild.element != null)
             {
                 nodeCount = drawNode(g, current.rightChild, x, level + 1, nodeCount, map);
             }
 
             g.setColor(Color.red);
-            if (current.leftChild != null)
+            if (current.leftChild.element != null)
             {
                 Point leftPoint = map.get(current.leftChild);
                 g.drawLine(currentX, currentY, leftPoint.x, leftPoint.y - BOX_SIZE / 2);
             }
-            if (current.rightChild != null)
+            if (current.rightChild.element != null)
             {
                 Point rightPoint = map.get(current.rightChild);
                 g.drawLine(currentX, currentY, rightPoint.x, rightPoint.y - BOX_SIZE / 2);

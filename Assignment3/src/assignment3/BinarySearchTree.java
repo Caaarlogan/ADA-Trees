@@ -165,6 +165,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         if (rootNode == null)
         {
             rootNode = newNode;
+            setChildrenNil(rootNode);
             added = true;
         } else
         {  // find where to add newNode
@@ -173,10 +174,12 @@ public class BinarySearchTree<E> extends AbstractSet<E>
             
             while (!done)
             {
+                System.out.println(rootNode);
+                System.out.println(o);
                 int comparison = compare(o, currentNode.element);
                 if (comparison < 0) // newNode is less than currentNode
                 {
-                    if (currentNode.leftChild == null)
+                    if (currentNode.leftChild == null || currentNode.leftChild.element == null)
                     {  // add newNode as leftChild
                         currentNode.leftChild = newNode;
                         done = true;
@@ -186,11 +189,12 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                         currentNode = currentNode.leftChild;
                     }
                     
+                    System.out.println("Here 1");
                     notePath(path, false);
                     
                 } else if (comparison > 0)//newNode is greater than currentNode
                 {
-                    if (currentNode.rightChild == null)
+                    if (currentNode.rightChild == null  || currentNode.rightChild.element == null)
                     {  // add newNode as rightChild
                         currentNode.rightChild = newNode;
                         done = true;
@@ -200,13 +204,17 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                         currentNode = currentNode.rightChild;
                     }
                     
+                    System.out.println("Here 2");
                     notePath(path, true);
                     
                 } else if (comparison == 0) // newNode equal to currentNode
                 {
+                    System.out.println("Here 3");
                     done = true; // no duplicates in this binary tree impl.
                 }
             }
+            
+            setChildrenNil(newNode);
         }
         if (added)
         {
@@ -309,7 +317,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         {
             numElements--;
             versionRemove(path, replacePath, o);
-            rbtRemove(path);
+            rbtRemove(path, removalNode);
         }
         return removed;
     }
@@ -320,21 +328,21 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     {
         BinaryTreeNode replacementNode = null;
         // check cases when removalNode has only one child
-        if (removalNode.leftChild != null && removalNode.rightChild == null)
+        if (removalNode.leftChild.element != null && removalNode.rightChild.element == null)
         {
             replacementNode = removalNode.leftChild;
-        } else if (removalNode.leftChild == null
-                && removalNode.rightChild != null)
+        } else if (removalNode.leftChild.element == null
+                && removalNode.rightChild.element != null)
         {
             replacementNode = removalNode.rightChild;
         } // check case when removalNode has two children
-        else if (removalNode.leftChild != null
-                && removalNode.rightChild != null)
+        else if (removalNode.leftChild.element != null
+                && removalNode.rightChild.element != null)
         {  // find the inorder successor and use it as replacementNode
             BinaryTreeNode parentNode = removalNode;
             replacementNode = removalNode.rightChild;
             
-            if (replacementNode.leftChild == null)
+            if (replacementNode.leftChild.element == null)
             // replacementNode can be pushed up one level to replace
             // removalNode, move the left child of removalNode to be
             // the left child of replacementNode
@@ -347,7 +355,7 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                     parentNode = replacementNode;
                     replacementNode = replacementNode.leftChild;
                     notePath(replacePath, false);
-                } while (replacementNode.leftChild != null);
+                } while (replacementNode.leftChild.element != null);
                 // move the right child of replacementNode to be the left
                 // child of the parent of replacementNode
                 parentNode.leftChild = replacementNode.rightChild;
@@ -566,7 +574,31 @@ public class BinarySearchTree<E> extends AbstractSet<E>
         // returns a string representation of the node element
         public String toString()
         {
-            return element.toString();
+            if (element == null)
+                return "null";
+            else
+                return element.toString();
+        }
+    }
+    
+    public void setChildrenNil(BinaryTreeNode node)
+    {
+        if (node.leftChild == null)
+        {
+            System.out.println("nil left");
+            BinaryTreeNode leftChild = new BinaryTreeNode(null);
+            leftChild.color = Color.BLACK;
+            node.leftChild = leftChild;
+            System.out.println("So " + node + " " + node.leftChild);
+            System.out.println(leftChild.element);
+        }
+        
+        if (node.rightChild == null)
+        {
+            System.out.println("nil right");
+            BinaryTreeNode rightChild = new BinaryTreeNode(null);
+            rightChild.color = Color.BLACK;
+            node.rightChild = rightChild;
         }
     }
 
