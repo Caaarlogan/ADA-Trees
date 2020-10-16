@@ -154,11 +154,6 @@ public class PersistentDynamicSetGUI<E> extends JPanel implements ActionListener
         private int drawNode(Graphics g, BinaryTreeNode current,
                 int x, int level, int nodeCount, Map<BinaryTreeNode, Point> map)
         {
-            System.out.println("R " + root);
-            System.out.println(current);
-            System.out.println(current.leftChild);
-            System.out.println(current.leftChild.color);
-            
             if (current.leftChild.element != null)
             {
                 nodeCount = drawNode(g, current.leftChild, x, level + 1, nodeCount, map);

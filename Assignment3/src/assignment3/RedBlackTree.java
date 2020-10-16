@@ -151,7 +151,6 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
     	
     	for (boolean direction : path)
         {
-            System.out.println("This is at " + current);
             parent = current;
     		
             if (!direction)
@@ -171,7 +170,6 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
         {
             if (current.color.equals(RED))
             {
-                System.out.println(current + " becomes BLACK");
                 current.color = BLACK;
                 caseEnd = true;
             }
@@ -186,9 +184,6 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
                 current.color = BLACK;
             else // current.color == BLACK
             {
-                System.out.println("Root " + rootNode);
-                System.out.println("Curr " + current);
-
                 while (!caseThreeLoop) {
                     if (current == parent.leftChild)
                         sibling = parent.rightChild;
@@ -215,13 +210,6 @@ public class RedBlackTree<E> extends BinarySearchTree<E>
 
                     //Case Three
                     //At this stage, sibling's color is currently set as BLACK
-
-                    System.out.println("1 " + sibling);
-                    System.out.println("2 " + sibling.leftChild);
-                    System.out.println("3 " + sibling.leftChild.color);
-
-                    //boolean siblingsNotNil = sibling.leftChild.element != null && sibling.rightChild.element
-                    
                     if (sibling.leftChild.color.equals(BLACK) && sibling.rightChild.color.equals(BLACK))
                     {
                         sibling.color = RED;

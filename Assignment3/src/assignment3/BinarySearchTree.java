@@ -174,8 +174,6 @@ public class BinarySearchTree<E> extends AbstractSet<E>
             
             while (!done)
             {
-                System.out.println(rootNode);
-                System.out.println(o);
                 int comparison = compare(o, currentNode.element);
                 if (comparison < 0) // newNode is less than currentNode
                 {
@@ -189,7 +187,6 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                         currentNode = currentNode.leftChild;
                     }
                     
-                    System.out.println("Here 1");
                     notePath(path, false);
                     
                 } else if (comparison > 0)//newNode is greater than currentNode
@@ -204,12 +201,10 @@ public class BinarySearchTree<E> extends AbstractSet<E>
                         currentNode = currentNode.rightChild;
                     }
                     
-                    System.out.println("Here 2");
                     notePath(path, true);
                     
                 } else if (comparison == 0) // newNode equal to currentNode
                 {
-                    System.out.println("Here 3");
                     done = true; // no duplicates in this binary tree impl.
                 }
             }
@@ -585,17 +580,13 @@ public class BinarySearchTree<E> extends AbstractSet<E>
     {
         if (node.leftChild == null)
         {
-            System.out.println("nil left");
             BinaryTreeNode leftChild = new BinaryTreeNode(null);
             leftChild.color = Color.BLACK;
             node.leftChild = leftChild;
-            System.out.println("So " + node + " " + node.leftChild);
-            System.out.println(leftChild.element);
         }
         
         if (node.rightChild == null)
         {
-            System.out.println("nil right");
             BinaryTreeNode rightChild = new BinaryTreeNode(null);
             rightChild.color = Color.BLACK;
             node.rightChild = rightChild;
